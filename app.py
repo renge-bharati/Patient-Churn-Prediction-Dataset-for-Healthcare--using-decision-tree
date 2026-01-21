@@ -1,38 +1,25 @@
 import streamlit as st
 import pandas as pd
-import pickle
-from sklearn.preprocessing import LabelEncoder
+import joblib
 
-st.set_page_config(page_title="Patient Churn Prediction", layout="centered")
+st.title("Patient Churn Prediction (Decision Tree)")
 
-st.title("🩺 Patient Churn Prediction (Decision Tree)")
+# Load model
+model = joblib.load("decision_tree_churn_model.pkl")
 
-# Load trained model
-with open("decision_tree_churn_model.pkl", "rb") as f:
-    model = pickle.load(f)
+st.subheader("Enter Patient Details")
 
-uploaded_file = st.file_uploader("Upload Patient Churn CSV File", type=["csv"])
+age = st.number_input("Age", 0, 100)
+tenure = st.number_input("Tenure (months)", 0, 120)
+visits = st.number_input("Hospital Visits", 0, 50)
 
-if uploaded_file is not None:
-    df = pd.read_csv(uploaded_file)
-    st.subheader("Dataset Preview")
-    st.dataframe(df.head())
+if st.button("Predict Churn"):
+    input_df = pd.DataFrame([[age, tenure, visits]],
+                            columns=["Age", "Tenure", "HospitalVisits"])
 
-    # Encode categorical columns
-    le = LabelEncoder()
-    df_encoded = df.copy()
+    prediction = model.predict(input_df)
 
-    for col in df_encoded.columns:
-        if df_encoded[col].dtype == 'object':
-            df_encoded[col] = le.fit_transform(df_encoded[col].astype(str))
-
-    if st.button("Predict Churn"):
-        predictions = model.predict(df_encoded)
-        df["Churn_Prediction"] = predictions
-
-        st.subheader("Prediction Results")
-        st.dataframe(df)
-
-        st.success("Churn prediction completed successfully!")
-else:
-    st.info("Please upload a CSV file to start prediction.")
+    if prediction[0] == 1:
+        st.error("Patient is likely to churn ❌")
+    else:
+        st.success("Patient is not likely to churn ✅")
