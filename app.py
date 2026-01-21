@@ -7,7 +7,7 @@ st.set_page_config(page_title="Patient Churn Prediction", layout="centered")
 st.title("🩺 Patient Churn Prediction (Decision Tree)")
 
 # Load trained model
-model_path = "decision_tree_churn_model.pkl(1)"
+model_path = "decision_tree_churn_model(1).pkl"
 try:
     model = joblib.load(model_path)
 except FileNotFoundError:
