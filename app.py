@@ -8,7 +8,7 @@ st.set_page_config(page_title="Patient Churn Prediction", layout="centered")
 st.title("🩺 Patient Churn Prediction (Decision Tree)")
 
 # Update this to match your model file name
-model_path = "decision_tree_churn_model(2).pkl"
+model_path = "decision_tree_churn_modelpkl"
 
 # Load model safely
 if os.path.exists(model_path):
