@@ -2,19 +2,23 @@ import streamlit as st
 import pandas as pd
 import joblib
 from sklearn.preprocessing import LabelEncoder
+import os
 
 st.set_page_config(page_title="Patient Churn Prediction", layout="centered")
 st.title("🩺 Patient Churn Prediction (Decision Tree)")
 
-# Load trained model
-model_path = "decision_tree_churn_model(1).pkl"
-try:
+# Update this to match your model file name
+model_path = "decision_tree_churn_model(2).pkl"
+
+# Load model safely
+if os.path.exists(model_path):
     model = joblib.load(model_path)
-except FileNotFoundError:
-    st.error(f"Model file '{model_path}' not found! Upload it to GitHub.")
+    st.success("Model loaded successfully!")
+else:
+    st.error(f"Model file '{model_path}' not found! Upload it to GitHub in the same folder as app.py.")
     st.stop()
 
-# Upload dataset for predictions
+# Upload CSV file for batch predictions
 uploaded_file = st.file_uploader("Upload Patient Churn CSV File", type=["csv"])
 
 if uploaded_file is not None:
@@ -22,7 +26,7 @@ if uploaded_file is not None:
     st.subheader("Dataset Preview")
     st.dataframe(df.head())
 
-    # Encode categorical columns
+    # Encode categorical columns automatically
     df_encoded = df.copy()
     for col in df_encoded.select_dtypes(include='object').columns:
         df_encoded[col] = LabelEncoder().fit_transform(df_encoded[col].astype(str))
